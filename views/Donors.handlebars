@@ -1,4 +1,7 @@
-//THIS CURRENT CODE IS BASED ON 1 DATABASE TABLE
+//THIS CURRENT CODE IS BASED ON 1 DATABASE TABLE --- Updated: Current code is based on 3 database tables
+//WARNING: I have never attempted to load >1 database table onto one html page so please check my AJAX functions, we can split these 2 tables (diplay and insertion) into 2 pages if needed
+//WARNING: code got a little messy and some id tags might not match but i will fix asap
+//WARNING: server.js has not been updated to account for these new changes, i will also fix asap
 
 
 //Kevin and Adrian have updated the database to include 3 tables: food, business, and food_business
@@ -27,12 +30,12 @@
         req.addEventListener("load", function(){
             if(req.status >= 200 && req.status < 400){
                 var response = JSON.parse(req.responseText);
-                var newTable = document.createElement("table");
-                newTable.id = "tableID";
+                var newTable_1 = document.createElement("table_1");
+                newTable_1.id = "tableID_1";
                 
                 //build Table via number of tuples/record occurrences returned from stored database (Food)
                 for(var i = 0; i <response.length; i++){
-                    var row = newTable.insertRow(i);
+                    var row = newTable_1.insertRow(i);
                     
                     //response object is stored as an array indexed by i within this for loop
                     //assign the row value attribute the value of the id for a given tuple/record occurrence; this is used to uniquely identify a given row/tuple/record occurrence
@@ -105,11 +108,11 @@
                 //Build Table Header
 
                 //Insert "table" into Document Object Model
-                var headerTable = document.createElement("table");
-                headerTable.id = "tableHeadID";
+                var headerTable_1 = document.createElement("table_1");
+                headerTable_1.id = "tableHeadID_1";
                 
                 //Create a row (THIS IS A SEPARATE TABLE that will sit on top of the "table") for the table's column/field names
-                var head_row = headerTable.insertRow(0);
+                var head_row = headerTable_1.insertRow(0);
                 var head_col_1 = head_row.insertCell(0);    //id column
                 var head_col_2 = head_row.insertCell(1);    //fid field
                 var head_col_3 = head_row.insertCell(2);    //business_name field
@@ -140,15 +143,15 @@
                 head_col_8.style.width = "500px";   
                 
                 //APPEND headerTable to html via div id: tableHeadArea1
-                document.getElementById("tableHeadArea1").appendChild(headerTable);
+                document.getElementById("tableHeadArea1").appendChild(headerTable_1);
                 
                 //APPEND newTable to html via div id: tableArea1
-                document.getElementById("tableArea1").appendChild(newTable);  
+                document.getElementById("tableArea1").appendChild(newTable_1);  
                 
                 //Set border size of headerTable cells
-                headerTable.setAttribute("border", 3);
+                headerTable_1.setAttribute("border", 3);
                 //Set border size of newTable cells
-                newTable.setAttribute("border", 3);
+                newTable_1.setAttribute("border", 3);
             }else{
                 console.log("Error in network request: " + request.statusText);        //request object works via request module in package.json
             }
@@ -174,25 +177,32 @@
                 alert("Must Enter a Business Name");
                 return;
             }
-            if(document.getElementById("food_type").value != ""){
-                var entry_food_type = 'food_type=' + document.getElementById("food_type").value;
-                URLString += entry_food_type;
+            if(document.getElementById("street_address").value != ""){
+                var entry_street_address = 'street_address=' + document.getElementById("street_address").value;
+                URLString += entry_street_address;
             }else{
-                alert("Must Enter a Food Type");
+                alert("Must Enter a Street Address");
+                return;
+            }            
+            if(document.getElementById("city").value != ""){
+                var entry_city = 'city=' + document.getElementById("city").value;
+                URLString += entry_city;
+            }else{
+                alert("Must Enter a City");
                 return;
             }
-            if(document.getElementById("quantity").value != ""){
-                var entry_quantity = 'quantity=' + document.getElementById("quantity").value;
-                URLString += entry_quantity;
+            if(document.getElementById("state").value != ""){
+                var entry_state = 'state=' + document.getElementById("state").value;
+                URLString += entry_state;
             }else{
-                alert("Must Enter a Quantity/Servings");
+                alert("Must Enter a State");
                 return;
             }
-            if(document.getElementById("address").value != ""){
-                var entry_address = 'address=' + document.getElementById("address").value;
-                URLString += entry_address;
+            if(document.getElementById("zip").value != ""){
+                var entry_zip = 'zip=' + document.getElementById("zip").value;
+                URLString += entry_zip;
             }else{
-                alert("Must Enter a Business Address");
+                alert("Must Enter a Zip Code");
                 return;
             }
             if(document.getElementById("specific_location").value != ""){
@@ -202,21 +212,14 @@
                 alert("Must Enter a Specific Location");
                 return;
             }       
-            if(document.getElementById("time_availability").value != ""){
-                var entry_time_availability = 'time_availability=' + document.getElementById("time_availability").value;
-                URLString += entry_time_availability;
-            }else{
-                alert("Must Enter a Pickup Time Availability");
-                return;
-            }     
             
             //OPEN async request via request object
             req.open("GET", URLString, true);
             req.addEventListener("load", function(){
                 if(req.status >= 200 && req.status < 400){
                     //Delete previous views of tables and re build them with new updated data from user form
-                    var dTable = document.getElementById("tableID");
-                    var dHTable = document.getElementById("tableHeadID");
+                    var dTable = document.getElementById("tableID_1");
+                    var dHTable = document.getElementById("tableHeadID_1");
                     dTable.parentNode.removeChild(dTable);
                     dHTable.parentNode.removeChild(dHTable);
                     buildTable();
@@ -243,8 +246,8 @@
         req.addEventListener("load", function(){
             if(req.status >= 200 && req.status < 400){
                 var response = JSON.parse(req.responseText);
-                var newTable = document.createElement("table");
-                newTable.id = "tableID";
+                var newTable = document.createElement("table_2");
+                newTable.id = "tableID_2";
                 
                 //build Table via number of tuples/record occurrences returned from stored database (Food)
                 for(var i = 0; i <response.length; i++){
@@ -258,13 +261,12 @@
                     
                     //insert 7 columns/fields within the inserted variable: row to be filled with database table values
                     var col_1 = row.insertCell(0);    //id column
-                    var col_2 = row.insertCell(1);    //business_name field
+                    var col_2 = row.insertCell(1);    //bid field
                     var col_3 = row.insertCell(2);    //food_type field
                     var col_4 = row.insertCell(3);    //quantity field
-                    var col_5 = row.insertCell(4);    //address field
-                    var col_6 = row.insertCell(5);    //specific_location field
-                    var col_7 = row.insertCell(6);    //time availability field
-                    
+                    var col_5 = row.insertCell(4);    //availability_start field
+                    var col_6 = row.insertCell(5);    //availability_end field
+
                     //format all columns to 500px for consistency
                     col_1.style.width = "500px";
                     col_2.style.width = "500px";
@@ -272,7 +274,6 @@
                     col_4.style.width = "500px";
                     col_5.style.width = "500px";
                     col_6.style.width = "500px";
-                    col_7.style.width = "500px";
 
                     //insert field values into row cells from stored database; if the response attribute is null, then assign "EMPTY" to the given cell of the row
                     if(response[i].id != null){
@@ -280,8 +281,8 @@
                     }else{
                         col_1.innerHTML = "EMPTY";
                     }
-                    if(response[i].business_name != null){
-                        col_2.innerHTML = response[i].business_name;
+                    if(response[i].bid != null){
+                        col_2.innerHTML = response[i].bid;
                     }else{
                         col_2.innerHTML = "EMPTY";
                     }                    
@@ -295,47 +296,41 @@
                     }else{
                         col_4.innerHTML = "EMPTY";
                     }      
-                    if(response[i].address != null){
-                        col_5.innerHTML = response[i].address;
+                    if(response[i].availability_start != null){
+                        col_5.innerHTML = response[i].availability_start;
                     }else{
                         col_5.innerHTML = "EMPTY";
                     }
-                    if(response[i].specific_location != null){
-                        col_6.innerHTML = response[i].specific_location;
+                    if(response[i].availability_end != null){
+                        col_6.innerHTML = response[i].availability_end;
                     }else{
                         col_6.innerHTML = "EMPTY";
                     }
-                    if(response[i].time_availability != null){
-                        col_7.innerHTML = response[i].time_availability;
-                    }else{
-                        col_7.innerHTML = "EMPTY";
-                    }
+
                 }
                 //Build Table Header
 
-                //Insert "table" into Document Object Model
-                var headerTable = document.createElement("table");
-                headerTable.id = "tableHeadID";
+                //Insert "table_2" into Document Object Model
+                var headerTable = document.createElement("table_2");
+                headerTable.id = "tableHeadID_2";
                 
-                //Create a row (THIS IS A SEPARATE TABLE that will sit on top of the "table") for the table's column/field names
+                //Create a row (THIS IS A SEPARATE TABLE that will sit on top of the "table_2") for the table's column/field names
                 var head_row = headerTable.insertRow(0);
                 var head_col_1 = head_row.insertCell(0);    //id column
-                var head_col_2 = head_row.insertCell(1);    //business_name field
+                var head_col_2 = head_row.insertCell(1);    //bid field
                 var head_col_3 = head_row.insertCell(2);    //food_type field
                 var head_col_4 = head_row.insertCell(3);    //quantity field
-                var head_col_5 = head_row.insertCell(4);    //address field
-                var head_col_6 = head_row.insertCell(5);    //specific_location field
-                var head_col_7 = head_row.insertCell(6);    //time availability field
-                
+                var head_col_5 = head_row.insertCell(4);    //availability_start field
+                var head_col_6 = head_row.insertCell(5);    //availability_end field
+
                 //Insert field names into columns of headerTable row
                 head_col_1.innerHTML = "ID";
-                head_col_2.innerHTML = "Business Name";
+                head_col_2.innerHTML = "Business ID";
                 head_col_3.innerHTML = "Food Type";
                 head_col_4.innerHTML = "Food Quantity/Servings";
-                head_col_5.innerHTML = "Business Address";
-                head_col_6.innerHTML = "Specific Pickup Location";
-                head_col_7.innerHTML = "Pickup Time Availability";
-                
+                head_col_5.innerHTML = "Pickup Time Availability Start";
+                head_col_6.innerHTML = "Pickup Time Availability End";
+
                 //format all header columns to 500px for consistency
                 head_col_1.style.width = "500px";
                 head_col_2.style.width = "500px";
@@ -343,8 +338,7 @@
                 head_col_4.style.width = "500px";
                 head_col_5.style.width = "500px";
                 head_col_6.style.width = "500px";
-                head_col_7.style.width = "500px";   
-                
+
                 //APPEND headerTable to html via div id: tableHeadArea2
                 document.getElementById("tableHeadArea2").appendChild(headerTable);
                 
@@ -369,19 +363,12 @@
     //Binds bindEntrySubmit function to the SUBMIT button/input of the donor form via eventListener function
     //bindEntrySubmit(): a send form data (to server.js to input form data into database) action on "click" of SUBMIT button/input of the donor form via eventListener function
     function bindEntrySubmit(){
-        document.getElementById("entrySubmit").addEventListener("click", function(event){
+        document.getElementById("entrySubmitFood").addEventListener("click", function(event){
             var req = new XMLHttpRequest();
             //base URL query string to send to server.js with appropriate query attributes 
             var URLString = "http://52.11.133.195:3000/Donors/food/insert?";
             
             //assigning form values to query variables which will be appened the URL query string
-            if(document.getElementById("business_name").value != ""){
-                var entry_business_name = 'business_name=' + document.getElementById("business_name").value;
-                URLString += entry_business_name;
-            }else{
-                alert("Must Enter a Business Name");
-                return;
-            }
             if(document.getElementById("food_type").value != ""){
                 var entry_food_type = 'food_type=' + document.getElementById("food_type").value;
                 URLString += entry_food_type;
@@ -396,35 +383,29 @@
                 alert("Must Enter a Quantity/Servings");
                 return;
             }
-            if(document.getElementById("address").value != ""){
-                var entry_address = 'address=' + document.getElementById("address").value;
-                URLString += entry_address;
+            if(document.getElementById("availability_start").value != ""){
+                var entry_availability_start = 'availability_start=' + document.getElementById("availability_start").value;
+                URLString += entry_availability_start;
             }else{
-                alert("Must Enter a Business Address");
+                alert("Must Enter a Food Availability Start Time");
                 return;
             }
-            if(document.getElementById("specific_location").value != ""){
-                var entry_specific_location = 'specific_location=' + document.getElementById("specific_location").value;
-                URLString += entry_specific_location;
+            if(document.getElementById("availability_end").value != ""){
+                var entry_availability_end = 'availability_end=' + document.getElementById("availability_end").value;
+                URLString += entry_availability_end;
             }else{
-                alert("Must Enter a Specific Location");
+                alert("Must Enter a Food Availability End Time");
                 return;
-            }       
-            if(document.getElementById("time_availability").value != ""){
-                var entry_time_availability = 'time_availability=' + document.getElementById("time_availability").value;
-                URLString += entry_time_availability;
-            }else{
-                alert("Must Enter a Pickup Time Availability");
-                return;
-            }     
+            }
+
             
             //OPEN async request via request object
             req.open("GET", URLString, true);
             req.addEventListener("load", function(){
                 if(req.status >= 200 && req.status < 400){
                     //Delete previous views of tables and re build them with new updated data from user form
-                    var dTable = document.getElementById("tableID");
-                    var dHTable = document.getElementById("tableHeadID");
+                    var dTable = document.getElementById("tableID_2");
+                    var dHTable = document.getElementById("tableHeadID_2");
                     dTable.parentNode.removeChild(dTable);
                     dHTable.parentNode.removeChild(dHTable);
                     buildTable();
@@ -474,12 +455,10 @@
         <fieldset>
             <legend>New Donor Food Entry:</legend>
            <!-- id field is PRIMARY KEY && auto increments-->
-                <label for="business_name">Enter Business Name:</label>
-                    <input type="text" name="business_name" id="business_name">
-                <label for="food_type">Enter Food Type:</label>
+                <label for="food_type">Enter a Food Type:</label>
                     <input type="text" name="food_type" id="food_type">
                 <label for="quantity">Enter Food Quantity/Servings:</label>
-                    <input type="text" name="quantity" id="quantity"> 
+                    <input type="text" name="quantity" id="quantity">
                 <label for="available_start">Enter Pickup Time Availability Start:</label>
                     <input type="text" name="available_start" id="available_start">   
                 <label for="available_end">Enter Pickup Time Availability End:</label>
@@ -492,4 +471,4 @@
 <div id"tableArea1"></div>
 
 <div id="tableHeadArea2"></div>
-<div id"tableArea2"></div>
+<div id"tableArea2"></div>              
