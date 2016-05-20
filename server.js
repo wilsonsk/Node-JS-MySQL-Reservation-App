@@ -14,6 +14,11 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 app.set('port', 3000);
 
+app.get('/', function(req, res, next){
+	var context = {};
+	res.render('home', context);
+});
+
 //EXAMPLE Donee view
 app.get('/Donees', function(req, res, next){
 	var context = {};
@@ -50,9 +55,10 @@ app.get('/Donors/load', function(req, res, next){
 	});
 });
 
+//req.query.<DOM id of input>
 app.get('/Donors/insert', function(req, res, next){
 	var context = {};
-	mysql.pool.query('INSERT INTO ' + 'Food' + ' (id, business_name, food_type, quantity, address, specific_location, time_availability) VALUES (?, ?, ?, ?, ?, ?, ?)', [req.query.dept_id, req.query.proj_id, req.query.first_name, req.query.last_name, req.query.salary], function(err, result){
+	mysql.pool.query('INSERT INTO ' + 'Food' + ' (business_name, food_type, quantity, address, specific_location, time_availability) VALUES (?, ?, ?, ?, ?, ?)', [req.query.business_name, req.query.food_type, req.query.quantity, req.query.address, req.query.specific_location, req.query.time_availability], function(err, result){
 		if(err){
 			next(err);
 			return;
@@ -69,17 +75,17 @@ app.get('/Donors/insert', function(req, res, next){
 
 
 // EXAMPLE table creation
-app.get('/Donors/reset-table', function(req, res, next){
+app.get('/business/reset-table', function(req, res, next){
 	var context = {};
-	mysql.pool.query('DROP TABLE IF EXISTS ' + 'Food', function(err){
-		var createString = 'CREATE TABLE ' + 'Food' + '(' + 
+	mysql.pool.query('DROP TABLE IF EXISTS ' + 'business', function(err){
+		var createString = 'CREATE TABLE ' + 'business' + '(' + 
 		'id INT PRIMARY KEY AUTO_INCREMENT, ' +
 		'business_name VARCHAR(255) NOT NULL,' +
-		'food_type VARCHAR(255) NOT NULL,' +
-		'quantity INT NOT NULL' +
-		'address VARCHAR(255) NOT NULL,' +
-		'specific_location VARCHAR(255) NOT NULL,' +
-		'time_availability TIME, ' +
+		'street_address VARCHAR(255) NOT NULL,' +
+		'city VARCHAR(255) NOT NULL, ' +
+		'state VARCHAR(32) NOT NULL, ' +
+		'zip UNSIGNED TINYINT NOT NULL,' +
+		'specific_location VARCHAR(255) NOT NULL' +
 		')ENGINE=InnoDB;';
 		mysql.pool.query(createString, function(err){
 			context.results = 'Table reset';
@@ -89,6 +95,41 @@ app.get('/Donors/reset-table', function(req, res, next){
 	}); 
 });
 
+
+app.get('food/reset-table', function(req, res, next){
+	var context = {};
+	mysql.pool.query('DROP TABLE IF EXISTS ' + 'food', function(err){
+		var createString = 'CREATE TABLE ' + 'food' + '(' + 
+		'id INT PRIMARY KEY AUTO_INCREMENT, ' +
+		'food_type VARCHAR(255) NOT NULL,' +
+		'quantity INT NOT NULL,' +
+		'availability_start DATETIME,' +
+		'availability_end DATETIME' +
+		')ENGINE=InnoDB;';
+		mysql.pool.query(createString, function(err){
+			context.results = 'Table reset';
+			console.log(createString);
+			res.render('Donors', context);
+		})
+	}); 
+});
+
+app.get('food_business/reset-table', function(req, res, next){
+	var context = {};
+		mysql.pool.query('DROP TABLE IF EXISTS ' + 'food_business', function(err){
+		var createString = 'CREATE TABLE ' + 'food_business' + '(' + 
+		'fk_food_id INT, ' +
+		'fk_business_id INT, ' + 
+		'foreign key (fk_food_id) references food(id) on delete cascade on update cascade, ' +
+		'foreign key (fk_business_id) references business(id) on delete cascade on update cascade' +
+		')ENGINE=InnoDB;';
+		mysql.pool.query(createString, function(err){
+			context.results = 'Table reset';
+			console.log(createString);
+			res.render('Donors', context);
+		})
+	}); 
+});
 
 app.use(function(req, res){
 	res.status(404);

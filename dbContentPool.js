@@ -3,7 +3,7 @@ var pool = mysql.createPool({
   host  : 'localhost',
   user  : 'student',
   password: 'default',
-  database: 'student'
+  database: 'cs361'
 });
 
 var dataBase = "cs361";
