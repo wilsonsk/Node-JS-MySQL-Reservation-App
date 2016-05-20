@@ -22,7 +22,7 @@ app.get('/', function(req, res, next){
 //EXAMPLE Donee view
 app.get('/Donees', function(req, res, next){
 	var context = {};
-	mysql.pool.query('SELECT * FROM ' + 'Food', function(err, rows, fields){
+	mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
 		if(err){
 			next(err);
 			return;
@@ -35,7 +35,7 @@ app.get('/Donees', function(req, res, next){
 //EXAMPLE Donor view: load && insert 
 app.get('/Donors', function(req, res, next){
 	var context = {};
-	mysql.pool.query('SELECT * FROM ' + 'Food', function(err, rows, fields){
+	mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
 		if(err){
 			next(err);
 			return;
@@ -44,9 +44,9 @@ app.get('/Donors', function(req, res, next){
 	});
 });
 
-app.get('/Donors/load', function(req, res, next){
+app.get('/Donors/food/load', function(req, res, next){
 	var context = {};
-	mysql.pool.query('SELECT * FROM ' +  'Food', function(err, rows, fields){
+	mysql.pool.query('SELECT * FROM ' +  'food', function(err, rows, fields){
 		if(err){
 			next(err);
 			return;
@@ -56,15 +56,15 @@ app.get('/Donors/load', function(req, res, next){
 });
 
 //req.query.<DOM id of input>
-app.get('/Donors/insert', function(req, res, next){
+app.get('/Donors/food/insert', function(req, res, next){
 	var context = {};
-	mysql.pool.query('INSERT INTO ' + 'Food' + ' (business_name, food_type, quantity, address, specific_location, time_availability) VALUES (?, ?, ?, ?, ?, ?)', [req.query.business_name, req.query.food_type, req.query.quantity, req.query.address, req.query.specific_location, req.query.time_availability], function(err, result){
+	mysql.pool.query('INSERT INTO ' + 'food' + ' (business_name, food_type, quantity, address, specific_location, time_availability) VALUES (?, ?, ?, ?, ?, ?)', [req.query.business_name, req.query.food_type, req.query.quantity, req.query.address, req.query.specific_location, req.query.time_availability], function(err, result){
 		if(err){
 			next(err);
 			return;
 		}
 	})
-	mysql.pool.query('SELECT * FROM ' + 'Food', function(err, rows, fields){
+	mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
 		if(err){
 			next(err);
 			return;
@@ -73,6 +73,23 @@ app.get('/Donors/insert', function(req, res, next){
 	})
 });
 
+//req.query.<DOM id of input>
+app.get('/Donors/business/insert', function(req, res, next){
+	var context = {};
+	mysql.pool.query('INSERT INTO ' + 'business' + ' (business_name, food_type, quantity, address, specific_location, time_availability) VALUES (?, ?, ?, ?, ?, ?)', [req.query.business_name, req.query.food_type, req.query.quantity, req.query.address, req.query.specific_location, req.query.time_availability], function(err, result){
+		if(err){
+			next(err);
+			return;
+		}
+	})
+	mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
+		if(err){
+			next(err);
+			return;
+		}
+		res.send(JSON.stringify(rows));
+	})
+});
 
 // EXAMPLE table creation
 app.get('/business/reset-table', function(req, res, next){
@@ -80,12 +97,16 @@ app.get('/business/reset-table', function(req, res, next){
 	mysql.pool.query('DROP TABLE IF EXISTS ' + 'business', function(err){
 		var createString = 'CREATE TABLE ' + 'business' + '(' + 
 		'id INT PRIMARY KEY AUTO_INCREMENT, ' +
+		'fid INT, ' +
 		'business_name VARCHAR(255) NOT NULL,' +
 		'street_address VARCHAR(255) NOT NULL,' +
 		'city VARCHAR(255) NOT NULL, ' +
 		'state VARCHAR(32) NOT NULL, ' +
-		'zip UNSIGNED TINYINT NOT NULL,' +
-		'specific_location VARCHAR(255) NOT NULL' +
+		'zip TINYINT UNSIGNED NOT NULL,' +
+		'specific_location VARCHAR(255) NOT NULL,' +
+		'FOREIGN KEY (fid)' +
+			'REFERENCES food_business(fk_food_id)' +
+			'ON UPDATE CASCADE' +
 		')ENGINE=InnoDB;';
 		mysql.pool.query(createString, function(err){
 			context.results = 'Table reset';
@@ -101,10 +122,14 @@ app.get('food/reset-table', function(req, res, next){
 	mysql.pool.query('DROP TABLE IF EXISTS ' + 'food', function(err){
 		var createString = 'CREATE TABLE ' + 'food' + '(' + 
 		'id INT PRIMARY KEY AUTO_INCREMENT, ' +
+		'bid INT, ' +
 		'food_type VARCHAR(255) NOT NULL,' +
 		'quantity INT NOT NULL,' +
 		'availability_start DATETIME,' +
-		'availability_end DATETIME' +
+		'availability_end DATETIME,' +
+		'FOREIGN KEY (bid)' +
+			'REFERENCES food_business(fk_business_id)' +
+			'ON UPDATE CASCADE' +
 		')ENGINE=InnoDB;';
 		mysql.pool.query(createString, function(err){
 			context.results = 'Table reset';
