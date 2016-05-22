@@ -38,14 +38,15 @@ app.get('/Donees', function(req, res, next){
 //EXAMPLE Donor view: load && insert 
 app.get('/Donors', function(req, res, next){
 	var context = {};
-	
-	//Temporarily commented to check how the Donors page looks when rendered.
-	mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
+		mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
 		if(err){
 			next(err);
 			return;
 		}
-		res.render('Donors', context);
+		
+		var foods = rows;
+		
+		res.render('Donors', {foods});
 	});
 });
 
@@ -87,7 +88,7 @@ app.get('/Donors/business/insert', function(req, res, next){
 			return;
 		}
 	})
-	mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
+	mysql.pool.query('SELECT * FROM ' + 'business', function(err, rows, fields){
 		if(err){
 			next(err);
 			return;
@@ -96,68 +97,44 @@ app.get('/Donors/business/insert', function(req, res, next){
 	})
 });
 
-// EXAMPLE table creation
+// Reset tables
 app.get('/business/reset-table', function(req, res, next){
 	var context = {};
-	mysql.pool.query('DROP TABLE IF EXISTS ' + 'business', function(err){
-		var createString = 'CREATE TABLE ' + 'business' + '(' + 
-		'id INT PRIMARY KEY AUTO_INCREMENT, ' +
-		'fid INT, ' +
-		'business_name VARCHAR(255) NOT NULL,' +
-		'street_address VARCHAR(255) NOT NULL,' +
-		'city VARCHAR(255) NOT NULL, ' +
-		'state VARCHAR(32) NOT NULL, ' +
-		'zip TINYINT UNSIGNED NOT NULL,' +
-		'specific_location VARCHAR(255) NOT NULL,' +
-		'FOREIGN KEY (fid)' +
-			'REFERENCES food_business(fk_food_id)' +
-			'ON UPDATE CASCADE' +
-		')ENGINE=InnoDB;';
-		mysql.pool.query(createString, function(err){
+	mysql.pool.query('TRUNCATE TABLE food', function(err){
+	
+		if (err) {
+			throw err;
+		}
+	}); 
+	
+	mysql.pool.query('DELETE FROM business', function(err){
+		
+		if (err) {
+			throw err;
+		}
+
+		mysql.pool.query('ALTER TABLE business AUTO_INCREMENT = 1', function(err){
+			
+			if (err){
+				throw err;
+			}
+			
 			context.results = 'Table reset';
-			console.log(createString);
-			res.render('Donors', context);
+			res.render('home', context);
 		})
 	}); 
 });
 
-
-app.get('food/reset-table', function(req, res, next){
+app.get('/food/reset-table', function(req, res, next){
 	var context = {};
-	mysql.pool.query('DROP TABLE IF EXISTS ' + 'food', function(err){
-		var createString = 'CREATE TABLE ' + 'food' + '(' + 
-		'id INT PRIMARY KEY AUTO_INCREMENT, ' +
-		'bid INT, ' +
-		'food_type VARCHAR(255) NOT NULL,' +
-		'quantity INT NOT NULL,' +
-		'availability_start DATETIME,' +
-		'availability_end DATETIME,' +
-		'FOREIGN KEY (bid)' +
-			'REFERENCES food_business(fk_business_id)' +
-			'ON UPDATE CASCADE' +
-		')ENGINE=InnoDB;';
-		mysql.pool.query(createString, function(err){
-			context.results = 'Table reset';
-			console.log(createString);
-			res.render('Donors', context);
-		})
-	}); 
-});
-
-app.get('food_business/reset-table', function(req, res, next){
-	var context = {};
-		mysql.pool.query('DROP TABLE IF EXISTS ' + 'food_business', function(err){
-		var createString = 'CREATE TABLE ' + 'food_business' + '(' + 
-		'fk_food_id INT, ' +
-		'fk_business_id INT, ' + 
-		'foreign key (fk_food_id) references food(id) on delete cascade on update cascade, ' +
-		'foreign key (fk_business_id) references business(id) on delete cascade on update cascade' +
-		')ENGINE=InnoDB;';
-		mysql.pool.query(createString, function(err){
-			context.results = 'Table reset';
-			console.log(createString);
-			res.render('Donors', context);
-		})
+	mysql.pool.query('TRUNCATE TABLE food', function(err){
+		
+			if (err) {
+				throw err;
+			}
+		
+			context.results = 'food table reset';
+			res.render('home', context);
 	}); 
 });
 
