@@ -1,0 +1,28 @@
+<h1>Donors</h1>
+
+<div class="col-md-8">
+    <table class="table table-striped table-hover">
+        <thead> 
+            <tr> 
+                <th>Name
+                <th>Address
+                <th>City
+                <th>State
+                <th>Zip
+                <th>Specific Location</th>
+            </tr> 
+        </thead>
+        <tbody> 
+            {{#each businesses}}
+                <tr> 
+                    <td>{{this.name}}
+                    <td>{{this.street_address}}
+                    <td>{{this.city}}
+                    <td>{{this.state}}
+                    <td>{{this.zip}}
+                    <td>{{this.specific_location}}
+                </tr> 
+            {{/each}}
+        </tbody>
+    </table>
+</div>
