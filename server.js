@@ -115,11 +115,11 @@ app.get('/Donors/food/create', function(req, res, next){
 app.post('/Donors/food/create', function(req, res, next){
 
 	var query = 'INSERT INTO food (`bid`, `type`, `quantity`, `availability_start`, `availability_end`)  VALUES ( ';
-	query += '`' + req.body.business_id + '`, ';
-	query += '`' + req.body.food_type + '`, ';
-	query += '`' + req.body.quantity + '`, ';
-	query += '`' + req.body.availability_start + '`, ';
-	query += '`' + req.body.availability_end;
+	query += '"' + req.body.business_id + '", ';
+	query += '"' + req.body.food_type + '", ';
+	query += req.body.quantity + ', ';
+	query += '"' + req.body.availability_start + '", ';
+	query += '"' + req.body.availability_end;
 	query += '");';
 	
 	mysql.pool.query(query, function(err, rows, fields){

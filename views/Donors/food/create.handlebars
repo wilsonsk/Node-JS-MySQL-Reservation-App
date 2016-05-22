@@ -1,5 +1,5 @@
 <div class="col-md-4">
-    <form role="form">
+    <form role="form" action="/Donors/food/create" method="POST">
         <fieldset>
             <legend>New Donor Food Entry:</legend>
                 <div class="form-group"> 
@@ -24,12 +24,12 @@
                 
                 <div class="form-group"> 
                     <label for="available_start">Enter Pickup Time Availability Start:</label>
-                    <input type="datetime-local" class="form-control" name="available_start" id="available_start"> 
+                    <input type="datetime-local" class="form-control" name="availability_start" id="available_start"> 
                 </div>
                 
                 <div class="form-group"> 
                     <label for="available_end">Enter Pickup Time Availability End:</label>
-                    <input type="datetime-local" class="form-control" name="available_end" id="available_end">  
+                    <input type="datetime-local" class="form-control" name="availability_end" id="available_end">  
                 </div>
                     
                 <input type="submit" id="entrySubmitFood" class="btn btn-primary">
