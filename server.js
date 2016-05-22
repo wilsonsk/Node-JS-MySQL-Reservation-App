@@ -131,6 +131,28 @@ app.post('/Donors/food/create', function(req, res, next){
 	});
 });
 
+//Next function handles the case where a donee wants to check the inventory of a specific donor/business
+app.post('/Donors/business', function(req, res, next){
+//select * from food where bid=req.body.business_id;
+
+	 var query = 'SELECT * FROM food WHERE bid=';
+	 query += req.body.business_id;
+	 query += ';';
+
+	mysql.pool.query(query, function(err, rows, fields){
+		if (err) {
+			throw err;
+		}	
+		
+		var foods = rows;
+		
+		res.render('Donors/food/index', {foods});
+	});
+
+	
+});
+
+
 // Reset tables
 app.get('/business/reset-table', function(req, res, next){
 	var context = {};
