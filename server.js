@@ -77,7 +77,7 @@ app.get('/Donors/business/create', function(req, res, next){
 });
 
 
-//POST: Sends POST data from the Add Business form
+//POST: Sends POST data from the Add Business form upon submission
 app.post('/Donors/business/create', function(req, res){
 	
 	var query = 'INSERT INTO business (`name`, `street_address`, `city`, `state`, `zip`, `specific_location`) VALUES (';
@@ -129,43 +129,6 @@ app.post('/Donors/food/create', function(req, res, next){
 		
 		res.redirect('Donors/food');
 	});
-	
-});
-
-//req.query.<DOM id of input>
-app.get('/Donors/food/insert', function(req, res, next){
-	var context = {};
-	mysql.pool.query('INSERT INTO ' + 'food' + ' (food_type, quantity, availability_start, availability_end) VALUES (?, ?, ?, ?)', [req.query.food_type, req.query.quantity, req.query.availability_start, req.query.availability_end], function(err, result){
-		if(err){
-			next(err);
-			return;
-		}
-	})
-	mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
-		if(err){
-			next(err);
-			return;
-		}
-		res.send(JSON.stringify(rows));
-	})
-});
-
-//req.query.<DOM id of input>
-app.get('/Donors/business/insert', function(req, res, next){
-	var context = {};
-	mysql.pool.query('INSERT INTO ' + 'business' + ' (business_name, street_address, city, state, zip, specific_location) VALUES (?, ?, ?, ?, ?, ?)', [req.query.business_name, req.query.street_address, req.query.city, req.query.state, req.query.zip, req.query.specific_location], function(err, result){
-		if(err){
-			next(err);
-			return;
-		}
-	})
-	mysql.pool.query('SELECT * FROM ' + 'business', function(err, rows, fields){
-		if(err){
-			next(err);
-			return;
-		}
-		res.send(JSON.stringify(rows));
-	})
 });
 
 // Reset tables

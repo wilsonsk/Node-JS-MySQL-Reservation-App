@@ -2,6 +2,7 @@
     <table class="table table-striped table-hover">
     <thead> 
         <tr> 
+            <th>Business ID
             <th>Food Type
             <th>Quantity/Servings
             <th>Pickup Time Availability (start)
@@ -11,6 +12,7 @@
     <tbody> 
         {{#each food}}
             <tr> 
+                <td>{{this.bid}}
                 <td>{{this.name}}
                 <td>{{this.quantity}}
                 <td>{{this.availability_start}}
