@@ -29,6 +29,21 @@ app.get('/', function(req, res, next){
 	res.render('home', context);
 });
 
+app.get('/contact', function(req, res, next){
+	var context = {};
+	res.render('contact', context);
+});
+
+app.get('/about', function(req, res, next){
+	var context = {};
+	res.render('about', context);
+});
+
+app.get('/test', function(req, res, next){
+	var context = {};
+	res.render('Donees/doneeView');
+});
+
 //EXAMPLE Donee view
 app.get('/Donees', function(req, res, next){
 	var context = {};
