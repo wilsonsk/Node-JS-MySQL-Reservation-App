@@ -15,8 +15,8 @@ app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
 //Have to use process.env.PORT to have it load a preview in Cloud9, will change back to regular port on final release
-//app.set('port', 3000);
-app.set('port', process.env.PORT);
+app.set('port', 3000);
+//app.set('port', process.env.PORT);
 
 //Load css or any js (/public)
 app.use(express.static(__dirname + '/public'));
@@ -38,7 +38,7 @@ app.get('/Donees', function(req, res, next){
 			return;
 		}
 		var foods = rows;
-		res.render('Donors', {foods});
+		res.render('Donors', {foods : foods});
 	});
 });
 
@@ -52,7 +52,7 @@ app.get('/Donors/business', function(req, res, next){
 		
 		var businesses = rows;
 		
-		res.render('Donors/business/index', {businesses});
+		res.render('Donors/business/index', {businesses : businesses});
 	});
 });
 
@@ -66,7 +66,7 @@ app.get('/Donors/food', function(req, res, next){
 		
 		var foods = rows;
 		
-		res.render('Donors/food/index', {foods});
+		res.render('Donors/food/index', {foods : foods});
 	});
 });
 
@@ -108,7 +108,7 @@ app.get('/Donors/food/create', function(req, res, next){
 		
 		var businesses = rows;
 		
-		res.render('Donors/food/create', {businesses});
+		res.render('Donors/food/create', {businesses : businesses});
 	});
 });
 
@@ -134,6 +134,7 @@ app.post('/Donors/food/create', function(req, res, next){
 //Next function handles the case where a donee wants to check the inventory of a specific donor/business
 app.post('/Donors/business', function(req, res, next){
 //select * from food where bid=req.body.business_id;
+//needs error checking (check user submitted a bid) or else it terminates server
 
 	 var query = 'SELECT * FROM food WHERE bid=';
 	 query += req.body.business_id;
@@ -146,7 +147,7 @@ app.post('/Donors/business', function(req, res, next){
 		
 		var foods = rows;
 		
-		res.render('Donors/food/index', {foods});
+		res.render('Donors/food/index', {foods : foods});
 	});
 
 	
