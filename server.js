@@ -24,6 +24,17 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+//google map api
+var GoogleMapsAPI = require('googlemaps');
+var publicConfig = {
+  key: 		      'AIzaSyDYdH9euGG8X0wOgdVWvEfvDpsnZwdZjNM',
+  stagger_time:       1000, // for elevationPath 
+  encode_polylines:   false,
+  secure:             true, // use https 
+  proxy:              'http://52.11.133.195:3000' // optional, set a proxy for HTTP requests 
+};
+var gmAPI = new GoogleMapsAPI(publicConfig);
+
 app.get('/', function(req, res, next){
 	var context = {};
 	res.render('home', context);
@@ -39,10 +50,82 @@ app.get('/about', function(req, res, next){
 	res.render('about', context);
 });
 
-app.get('/test', function(req, res, next){
-	var context = {};
-	res.render('Donees/doneeView');
+app.get('/testMap', function(req, res, next){
+	var params = {
+  center: '444 W Main St Lock Haven PA',
+  zoom: 15,
+  size: '500x400',
+  maptype: 'roadmap',
+  markers: [
+    {
+      location: '300 W Main St Lock Haven, PA',
+      label   : 'A',
+      color   : 'green',
+      shadow  : true
+    },
+    {
+      location: '444 W Main St Lock Haven, PA',
+      icon: 'http://chart.apis.google.com/chart?chst=d_map_pin_icon&chld=cafe%7C996600'
+    }
+  ],
+  style: [
+    {
+      feature: 'road',
+      element: 'all',
+      rules: {
+        hue: '0x00ff00'
+      }
+    }
+  ],
+  path: [
+    {
+      color: '0x0000ff',
+      weight: '5',
+      points: [
+        '41.139817,-77.454439',
+        '41.138621,-77.451596'
+      ]
+    }
+  ]
+	};
+	var results = gmAPI.staticMap(params);
+	res.render('Donees/doneeViewTest', {map : results});
+
 });
+
+
+app.get('/test', function(req, res, next){
+                mysql.pool.query('SELECT * FROM ' + 'business', function(err, rows, fields){
+                if(err){
+                        next(err);
+                        return;
+                }
+
+                var businesses = rows;
+                res.render('Donees/doneeView', {businesses : businesses});
+        });
+});
+
+app.post('/test', function(req, res, next){
+//select * from food where bid=req.body.business_id;
+//needs error checking (check user submitted a bid) or else it terminates server
+
+         var query = 'SELECT * FROM food WHERE bid=';
+         query += req.body.business_id;
+         query += ';';
+
+        mysql.pool.query(query, function(err, rows, fields){
+                if (err) {
+                        throw err;
+                }
+
+                var foods = rows;
+
+                res.render('Donors/food/index', {foods : foods});
+        });
+});
+
+
 
 //EXAMPLE Donee view
 app.get('/Donees', function(req, res, next){
@@ -164,8 +247,6 @@ app.post('/Donors/business', function(req, res, next){
 		
 		res.render('Donors/food/index', {foods : foods});
 	});
-
-	
 });
 
 

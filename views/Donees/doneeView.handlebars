@@ -3,11 +3,29 @@
 function initializeMap() {
 	var mapProps = {
 		center: new google.maps.LatLng(37.09024, -100.712891),
-		zoom: 5,
+		zoom: 4,
 		mapTypeId:google.maps.MapTypeId.ROADMAP
 	};
 	var map=new google.maps.Map(document.getElementById("googleMap"),mapProps);
 }
 google.maps.event.addDomListener(window, 'load', initializeMap);
 </script>
-<div id="googleMap" style="width:500px;height:380px;"></div>
+<div class="col-md-8" id="googleMap" style="width:500px;height:380px;"></div>
+
+
+<div class="col-md-4">
+    <form role="form" action="/test" method="POST">    
+        <fieldset>
+            <legend>Find a Donor on a Map:</legend>
+                <div class="form-group"> 
+                    <label for="Specific_donor">Pick a Specific Donor:</label>
+                    <select class="form-control" name="business_id" id="business_id">
+                        <option>--Select Donor--</option>
+                            {{#each businesses}}
+                                <option value={{this.id}}>{{this.name}}</option>
+                            {{/each}}
+                    </select>
+                <input type="submit" id="entrySubmitABusiness" class="btn btn-primary">
+        </fieldset>
+    </form>
+</div>
