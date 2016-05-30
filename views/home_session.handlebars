@@ -2,20 +2,9 @@
 
 <div class="jumbotron">
     <h1>No Food Left Behind</h1>
-    {{#if user_name}}
-	<h2>Welcome {{user_name}}</h2>
-    {{/if}}
+    <h2>Welcome {{user_name}}</h2>
     <p>
         UPDATE: 5/29 - error checking on all 4 forms (add bus, food, claim food, select spec bus). need to adjust claim/reservation from specific business, if there is an error caught the refresh causes the database content to no longer be specific
-	<form role="form" action="/" method="POST">
-		<fieldset>
-			<legend>Login</legend>
-			<div class="form-group">
-				<label for="user_name">Enter Your Name:</label>
-				<input type="text" class="form-control" name="user_name" id="user_name" placeholder="Your Name">
-			</div>
-			<input type="submit" id="submitUserName" class="btn btn-primary btn-lg">
-		</fieldset>
     </p>
 </div>
 
@@ -25,3 +14,4 @@
 <h3>
     <a href="/Donors/food">Find All Available Food</a>
 </h3>
+

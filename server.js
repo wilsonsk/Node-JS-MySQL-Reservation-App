@@ -5,6 +5,7 @@
 //
 
 var express = require('express');
+var session = require('express-session');
 var mysql = require('./dbContentPool.js');
 var bodyParser = require('body-parser');
 var app = express();
@@ -24,6 +25,15 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
+//Sessions
+//constructor for sessions: pass it an options object, only required attribute is secret. Secret is a phrase that only the server should know ideally. this phrase encrypts and unencrypts cookies to see if the cookies have been tampered with by the client.
+//if client changes cookie and does not know secret phrase, then the client can not reencrypt the cookie to make it appear non changed
+//essentially securely store cookies on clients' computer and prevents them from tampering with the cookies
+app.use(session({secret: 'eecsCS361'}));
+//The session is stored in the server's memory: problems: if server dies, the session data is all lost; if multiple servers they could disagree with whats in a particular session because they all have their own memory
+//real world wouldn't use memory store
+
+
 //google map api
 var GoogleMapsAPI = require('googlemaps');
 var publicConfig = {
@@ -37,7 +47,22 @@ var gmAPI = new GoogleMapsAPI(publicConfig);
 
 app.get('/', function(req, res, next){
 	var context = {};
-	res.render('home', context);
+	if(!req.session.user_name){
+		res.render('home');
+	}else{
+		var user_name = req.session.user_name;
+		res.render('home_session', {user_name : user_name});
+	}
+});
+
+app.post('/', function(req, res, next){
+	req.session.user_name = req.body.user_name;
+        if(!req.session.user_name){
+                res.render('home');
+        }else{
+                var user_name = req.session.user_name;
+                res.render('home_session', {user_name : user_name});
+        }
 });
 
 app.get('/contact', function(req, res, next){
