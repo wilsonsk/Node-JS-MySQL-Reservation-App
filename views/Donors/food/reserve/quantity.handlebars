@@ -1,0 +1,37 @@
+<div class="col-md-8">
+    <table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Type
+            <th>Quantity
+            <th>Pickup Availability Start
+            <th>Pickup Availability End
+        </tr>
+    </thead>
+    <tbody>
+        {{#each foods }}
+            <tr>
+                <td>{{this.type}}
+                <td>{{this.quantity}}
+                <td>{{this.availability_start}}
+                <td>{{this.availability_end}}
+            </tr>
+        {{/each }}
+    </tbody>
+</table>
+</div>
+<div class="col-md-2"></div>
+
+<div class="col-md-4">
+    <form role="form" action="/Donees/food/reserve/quantity" method="POST">
+        <fieldset>
+            <legend>Reserve Food:</legend>
+                <div class="form-group">
+                    <label for="Specific_foodType">Pick a Quantity of Food to Reserve:</label>
+                   	 	<input value={{foods.quantity}} type="number" class="form-control" name="quantity" id="quantity" min="0" max="{{foods.quantity}}" placeholder="Quantity">
+                <input type="submit" id="entrySubmitAFood" class="btn btn-primary">
+        </fieldset>
+    </form>
+</div>
+
+

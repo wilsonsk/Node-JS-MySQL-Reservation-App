@@ -50,6 +50,7 @@ app.get('/about', function(req, res, next){
 	res.render('about', context);
 });
 
+//testing server side map building
 app.get('/testMap', function(req, res, next){
 	var params = {
   center: '444 W Main St Lock Haven PA',
@@ -93,7 +94,7 @@ app.get('/testMap', function(req, res, next){
 
 });
 
-
+//testing client side map building
 app.get('/test', function(req, res, next){
                 mysql.pool.query('SELECT * FROM ' + 'business', function(err, rows, fields){
                 if(err){
@@ -106,6 +107,7 @@ app.get('/test', function(req, res, next){
         });
 });
 
+//testing donor locations on google maps api
 app.post('/test', function(req, res, next){
 //select * from food where bid=req.body.business_id;
 //needs error checking (check user submitted a bid) or else it terminates server
@@ -154,6 +156,7 @@ app.get('/Donors/business', function(req, res, next){
 	});
 });
 
+//need to render food items to the new quantity menus
 app.get('/Donors/food', function(req, res, next){
 
 		mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
@@ -168,6 +171,71 @@ app.get('/Donors/food', function(req, res, next){
 	});
 });
 
+app.post('/Donors/food/reserve', function(req, res, next){
+	if(req.body.food_id == '--Select Food Type--'){
+		var invalidFood = "<script>alert('Must Select a Food Type')</script>";
+		var query = 'SELECT * FROM food;';
+		mysql.pool.query(query, function(err, rows, fields){
+			res.render('Donors/food', {foods : rows, alert : invalidFood});
+		});
+	}else if(req.body.quantity == ""){
+		var invalidQuantity = "<script>alert('Must Select a Quantity')</script>";
+		var query = 'SELECT * FROM food;';
+		mysql.pool.query(query, function(err, rows, fields){
+			res.render('Donors/food', {foods : rows, alert : invalidQuantity});
+		});
+	}else{
+		var query = 'SELECT * FROM food WHERE id= ';
+		query += req.body.food_id;
+		query += ';';
+
+		mysql.pool.query(query, function(err, rows, fields){
+			if(err){
+				next(err);
+				return;
+			}
+		
+			var newQuantity = (rows[0].quantity - req.body.quantity);	
+			if(req.body.quantity > rows[0].quantity){
+				var invalidQuantity = "<script>alert('Invalid Quantity')</script>";
+				query = 'SELECT * FROM food;';
+				mysql.pool.query(query, function(err, rows, fields){
+					res.render('Donors/food', {foods : rows, alert : invalidQuantity});
+				});
+			}else if(newQuantity == 0){
+				query = 'DELETE FROM food WHERE id= ';
+				query += rows[0].id;
+				query += ';';
+				
+				mysql.pool.query(query, function(err, rows, fields){
+					if(err){
+						next(err);
+						return;
+					}
+
+				res.redirect('Donors/food');
+				});
+			}else{
+			
+				query = 'UPDATE food SET quantity = ';	
+				query += newQuantity;
+				query += ' WHERE id= ';
+				query += req.body.food_id;
+				query += ';';
+		
+				mysql.pool.query(query, function(err, rows, fields){
+					if(err){
+						next(err);
+						return;
+					}
+	
+					res.redirect('Donors/food'); 	
+				});
+			}
+		});
+	}
+});
+
 
 //GET: Goes to the Add Business page and loads up the form
 app.get('/Donors/business/create', function(req, res, next){
@@ -177,23 +245,45 @@ app.get('/Donors/business/create', function(req, res, next){
 
 //POST: Sends POST data from the Add Business form upon submission
 app.post('/Donors/business/create', function(req, res){
+	if(req.body.business_name == "" && req.body.street_address == "" && req.body.city == "" && req.body.state == "" && req.body.zip == "" && req.body.specific_location == ""){
+                var invalid = "<script>alert('Must Fill Out This Form to Add a New Business')</script>";
+                res.render('Donors/business/create', {alert : invalid});
+	}else if(req.body.business_name == ""){
+                var invalid = "<script>alert('Must Enter a Business Name')</script>";
+                res.render('Donors/business/create', {alert : invalid});
+	}else if(req.body.street_address == ""){
+                var invalid = "<script>alert('Must Enter a Street Address')</script>";
+                res.render('Donors/business/create', {alert : invalid});
+	}else if(req.body.city == ""){
+                var invalid = "<script>alert('Must Enter a City')</script>";
+                res.render('Donors/business/create', {alert : invalid});
+	}else if(req.body.state == ""){
+                var invalid = "<script>alert('Must Select a State')</script>";
+                res.render('Donors/business/create', {alert : invalid});
+	}else if(req.body.zip == ""){
+                var invalid = "<script>alert('Must Enter a Zip Code')</script>";
+                res.render('Donors/business/create', {alert : invalid});
+	}else if(req.body.specific_location == ""){
+                var invalid = "<script>alert('Must Enter a Specific Pickup Location')</script>";
+                res.render('Donors/business/create', {alert : invalid});
+	}else{
+		var query = 'INSERT INTO business (`name`, `street_address`, `city`, `state`, `zip`, `specific_location`) VALUES (';
+		query += '"' + req.body.business_name + '", ';
+		query += '"' + req.body.street_address + '", ';
+		query += '"' + req.body.city + '", ';
+		query += '"' + req.body.state + '", ';
+		query += '"' + req.body.zip + '", ';
+		query += '"' + req.body.specific_location;	
+		query += '");';
 	
-	var query = 'INSERT INTO business (`name`, `street_address`, `city`, `state`, `zip`, `specific_location`) VALUES (';
-	query += '"' + req.body.business_name + '", ';
-	query += '"' + req.body.street_address + '", ';
-	query += '"' + req.body.city + '", ';
-	query += '"' + req.body.state + '", ';
-	query += '"' + req.body.zip + '", ';
-	query += '"' + req.body.specific_location;	
-	query += '");';
-	
-	mysql.pool.query(query, function(err, rows, fields){
-		if (err) {
-			throw err;
-		}
+		mysql.pool.query(query, function(err, rows, fields){
+			if (err) {
+				throw err;
+			}
 		
-		res.redirect('Donors/business');
-	});
+			res.redirect('Donors/business');
+		});
+	}
 });
 
 app.get('/Donors/food/create', function(req, res, next){
@@ -233,20 +323,27 @@ app.post('/Donors/food/create', function(req, res, next){
 app.post('/Donors/business', function(req, res, next){
 //select * from food where bid=req.body.business_id;
 //needs error checking (check user submitted a bid) or else it terminates server
+        if(req.body.business_id == '--Select Donor--'){
+                var invalidBus = "<script>alert('Selected Invalid Business')</script>";
+                var query = 'SELECT * FROM business;';
+                mysql.pool.query(query, function(err, rows, fields){
+                        res.render('Donors/business', {businesses : rows, alert : invalidBus});
+                });
+        }else{
+		var query = 'SELECT * FROM food WHERE bid=';
+		query += req.body.business_id;
+		query += ';';
 
-	 var query = 'SELECT * FROM food WHERE bid=';
-	 query += req.body.business_id;
-	 query += ';';
-
-	mysql.pool.query(query, function(err, rows, fields){
-		if (err) {
-			throw err;
-		}	
-		
-		var foods = rows;
-		
-		res.render('Donors/food/index', {foods : foods});
-	});
+		mysql.pool.query(query, function(err, rows, fields){
+			if (err) {
+				throw err;
+			}	
+			
+			var foods = rows;
+			
+			res.render('Donors/food/index', {foods : foods});
+		});
+	}
 });
 
 
