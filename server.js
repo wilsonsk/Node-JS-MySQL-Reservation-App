@@ -183,8 +183,9 @@ app.get('/Donors/business', function(req, res, next){
 
 //need to render food items to the new quantity menus
 app.get('/Donors/food', function(req, res, next){
-
-		mysql.pool.query('SELECT * FROM ' + 'food', function(err, rows, fields){
+		var query = 'SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id;'; 
+	
+		mysql.pool.query(query, function(err, rows, fields){
 		if(err){
 			next(err);
 			return;
@@ -324,7 +325,6 @@ app.get('/Donors/food/create', function(req, res, next){
 		res.render('Donors/food/create', {businesses : businesses});
 	});
 });
-
 app.post('/Donors/food/create', function(req, res, next){
         if(req.body.business_id == "" && req.body.food_type == "" && req.body.quantity == "" && req.body.availability_start == "" && req.body.availability_end == ""){
                 var invalid = "<script>alert('Must Fill Out This Form to Add a New Food')</script>";
@@ -417,7 +417,6 @@ app.post('/Donors/food/create', function(req, res, next){
 		});
 	}
 });	
-
 //Next function handles the case where a donee wants to check the inventory of a specific donor/business
 app.post('/Donors/business', function(req, res, next){
 //select * from food where bid=req.body.business_id;
@@ -429,7 +428,7 @@ app.post('/Donors/business', function(req, res, next){
                         res.render('Donors/business', {businesses : rows, alert : invalidBus});
                 });
         }else{
-		var query = 'SELECT * FROM food WHERE bid=';
+		var query = 'SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id WHERE bid=';
 		query += req.body.business_id;
 		query += ';';
 

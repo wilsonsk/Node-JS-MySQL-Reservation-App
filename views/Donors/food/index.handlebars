@@ -2,7 +2,8 @@
 <div class="col-md-8">
     <table class="table table-striped table-hover">
     <thead> 
-        <tr> 
+        <tr>
+            <th>Business
             <th>Type
             <th>Quantity
             <th>Pickup Availability Start
@@ -11,7 +12,8 @@
     </thead>
     <tbody> 
         {{#each foods }}
-            <tr> 
+            <tr>
+                <td>{{this.name}}
                 <td>{{this.type}}
                 <td>{{this.quantity}}
                 <td>{{this.availability_start}}
