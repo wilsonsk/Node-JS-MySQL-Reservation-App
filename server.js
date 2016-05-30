@@ -301,23 +301,97 @@ app.get('/Donors/food/create', function(req, res, next){
 });
 
 app.post('/Donors/food/create', function(req, res, next){
+        if(req.body.business_id == "" && req.body.food_type == "" && req.body.quantity == "" && req.body.availability_start == "" && req.body.availability_end == ""){
+                var invalid = "<script>alert('Must Fill Out This Form to Add a New Food')</script>";
+        	mysql.pool.query('SELECT id, name FROM business', function(err, rows, fields){
 
-	var query = 'INSERT INTO food (`bid`, `type`, `quantity`, `availability_start`, `availability_end`)  VALUES ( ';
-	query += '"' + req.body.business_id + '", ';
-	query += '"' + req.body.food_type + '", ';
-	query += req.body.quantity + ', ';
-	query += '"' + req.body.availability_start + '", ';
-	query += '"' + req.body.availability_end;
-	query += '");';
-	
-	mysql.pool.query(query, function(err, rows, fields){
-		if (err) {
-			throw err;
-		}
+                	if (err) {
+                	        throw err;
+                	}
+
+                	var businesses = rows;
+
+                	res.render('Donors/food/create', {businesses : businesses, alert : invalid});
+        	});
+        }else if(req.body.business_id == "--Select Donor--"){
+                var invalid = "<script>alert('Must Select a Business')</script>";
+                mysql.pool.query('SELECT id, name FROM business', function(err, rows, fields){
+
+                        if (err) {
+                                throw err;
+                        }
+
+                        var businesses = rows;
+
+        	        res.render('Donors/food/create', {businesses : businesses, alert : invalid});
+                });
+        }else if(req.body.food_type == ""){
+                var invalid = "<script>alert('Must Enter a Food Type')</script>";
+                mysql.pool.query('SELECT id, name FROM business', function(err, rows, fields){
+
+                        if (err) {
+                                throw err;
+                        }
+
+                        var businesses = rows;
+
+                        res.render('Donors/food/create', {businesses : businesses, alert : invalid});
+                });
+        }else if(req.body.quantity == ""){
+                var invalid = "<script>alert('Must Select a Quantity')</script>";
+                mysql.pool.query('SELECT id, name FROM business', function(err, rows, fields){
+
+                        if (err) {
+                                throw err;
+                        }
+
+                        var businesses = rows;
+
+                        res.render('Donors/food/create', {businesses : businesses, alert : invalid});
+                });
+        }else if(req.body.availability_start == ""){
+                var invalid = "<script>alert('Must Select an Availability Start Time')</script>";
+                mysql.pool.query('SELECT id, name FROM business', function(err, rows, fields){
+
+                        if (err) {
+                                throw err;
+                        }
+
+                        var businesses = rows;
+
+                        res.render('Donors/food/create', {businesses : businesses, alert : invalid});
+                });
+        }else if(req.body.availability_end == ""){
+                var invalid = "<script>alert('Must Enter an Availability End Time')</script>";
+                mysql.pool.query('SELECT id, name FROM business', function(err, rows, fields){
+
+                        if (err) {
+                                throw err;
+                        }
+
+                        var businesses = rows;
+
+                        res.render('Donors/food/create', {businesses : businesses, alert : invalid});
+                });
+        }else{
+
+		var query = 'INSERT INTO food (`bid`, `type`, `quantity`, `availability_start`, `availability_end`)  VALUES ( ';
+		query += '"' + req.body.business_id + '", ';
+		query += '"' + req.body.food_type + '", ';
+		query += req.body.quantity + ', ';
+		query += '"' + req.body.availability_start + '", ';
+		query += '"' + req.body.availability_end;
+		query += '");';
 		
-		res.redirect('Donors/food');
-	});
-});
+		mysql.pool.query(query, function(err, rows, fields){
+			if (err) {
+				throw err;
+			}
+			
+			res.redirect('Donors/food');
+		});
+	}
+});	
 
 //Next function handles the case where a donee wants to check the inventory of a specific donor/business
 app.post('/Donors/business', function(req, res, next){
