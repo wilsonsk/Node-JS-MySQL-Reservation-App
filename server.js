@@ -202,13 +202,13 @@ app.post('/Donors/food/reserve', function(req, res, next){
 		var invalidFood = "<script>alert('Must Select a Food Type')</script>";
 		var query = 'SELECT food.*, business.name FROM food JOIN business on food.bid = business.id;';
 		mysql.pool.query(query, function(err, rows, fields){
-			res.render('Donors/food', {foods : rows, alert : invalidFood});
+			res.render('Donors/food/index', {foods : rows, alert : invalidFood});
 		});
 	}else if(req.body.quantity == ""){
 		var invalidQuantity = "<script>alert('Must Select a Quantity')</script>";
 		var query = 'SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id;';
 		mysql.pool.query(query, function(err, rows, fields){
-			res.render('Donors/food', {foods : rows, alert : invalidQuantity});
+			res.render('Donors/food/index', {foods : rows, alert : invalidQuantity});
 		});
 	}else{
 		var query = 'SELECT * FROM food WHERE id= ';
@@ -224,9 +224,9 @@ app.post('/Donors/food/reserve', function(req, res, next){
 			var newQuantity = (rows[0].quantity - req.body.quantity);	
 			if(req.body.quantity > rows[0].quantity){
 				var invalidQuantity = "<script>alert('Invalid Quantity')</script>";
-				query = 'SELECT * FROM food;';
+				query = 'SELECT food.*, business.name FROM food JOIN business on food.bid = business.id;';
 				mysql.pool.query(query, function(err, rows, fields){
-					res.render('Donors/food', {foods : rows, alert : invalidQuantity});
+					res.render('Donors/food/index', {foods : rows, alert : invalidQuantity});
 				});
 			}else if(newQuantity == 0){
 				query = 'DELETE FROM food WHERE id= ';
