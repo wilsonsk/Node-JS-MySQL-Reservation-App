@@ -200,13 +200,13 @@ app.get('/Donors/food', function(req, res, next){
 app.post('/Donors/food/reserve', function(req, res, next){
 	if(req.body.food_id == '--Select Food Type--'){
 		var invalidFood = "<script>alert('Must Select a Food Type')</script>";
-		var query = 'SELECT * FROM food;';
+		var query = 'SELECT food.*, business.name FROM food JOIN business on food.bid = business.id;';
 		mysql.pool.query(query, function(err, rows, fields){
 			res.render('Donors/food', {foods : rows, alert : invalidFood});
 		});
 	}else if(req.body.quantity == ""){
 		var invalidQuantity = "<script>alert('Must Select a Quantity')</script>";
-		var query = 'SELECT * FROM food;';
+		var query = 'SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id;';
 		mysql.pool.query(query, function(err, rows, fields){
 			res.render('Donors/food', {foods : rows, alert : invalidQuantity});
 		});
