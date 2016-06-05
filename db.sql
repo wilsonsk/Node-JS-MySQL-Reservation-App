@@ -1,3 +1,4 @@
+set FOREIGN_KEY_CHECKS = 0;
 drop table if exists `food`;
 drop table if exists `business`;
 
@@ -25,6 +26,10 @@ CREATE TABLE `business` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
 
+//Query that displays food entity and businesss name associated with that food entity
+'SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id;'
+
+//sample insertion queries
 insert into business (`name`, `street_address`, `city`, `state`, `zip`, `specific_location`) values
 ("Joe Blow`s Dough", "2341 Who Cares", "Springville", "Illinois", 98765, "Around the back");
 
