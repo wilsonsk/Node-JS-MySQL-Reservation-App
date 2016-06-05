@@ -181,7 +181,8 @@ app.get('/Donors/business', function(req, res, next){
 	});
 });
 
-//need to render food items to the new quantity menus
+//render food items and business name (from food & business tables) to view
+//format military time to standard time representation
 app.get('/Donors/food', function(req, res, next){
 		var query = 'SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id;'; 
 	
@@ -191,6 +192,43 @@ app.get('/Donors/food', function(req, res, next){
 			return;
 		}
 		
+		//function takes a 4 character string representing military and returns std time representation
+		var getFormattedTime = function(fourDigitTime){
+			var hours24 = parseInt(fourDigitTime.substring(0, 2), 10);
+			var hours = ((hours24 + 11) % 12) + 1;
+			var amPm = hours24 > 11 ? ' pm' : ' am';
+			var minutes = fourDigitTime.substring(2);
+			
+			return hours + ':' + minutes + amPm;
+		};
+
+		//create double digit number if the number is single digit; the first digit being a '0'
+		//function takes an int and returns a string such that if the in is a single digit the string will be 2 chars:
+		//one being the input int and the other being a '0' char
+		var minsCon = function(t){
+			var n;
+			if(t < 10){
+				n = '0' + t.toString();
+			}else{
+				n = t.toString();
+			}
+	
+			return n;
+		} 	
+	
+		//get military time representation from query (from each tuple i.e., length of rows)
+		//pass to the format functions for conversion to standard time representation
+		for(var i = 0; i < rows.length; i++){
+			if(typeof rows[i]["availability_start"] === 'object'){
+				var datetime = rows[i]["availability_start"];
+				var datetime2 = rows[i]["availability_end"];
+				var newDateTime = (datetime.getMonth() + 1) + '/' + datetime.getUTCDate() + '/' + datetime.getUTCFullYear() + ' ' + getFormattedTime(datetime.getHours().toString() + minsCon(datetime.getMinutes()));
+				rows[i]["availability_start"] = newDateTime;
+				newDateTime = (datetime2.getMonth() + 1) + '/' + datetime2.getUTCDate() + '/' + datetime2.getUTCFullYear() + ' ' + getFormattedTime(datetime2.getHours().toString() + minsCon(datetime2.getMinutes()));
+				rows[i]["availability_end"] = newDateTime;
+			}
+		}
+
 		var foods = rows;
 		
 		res.render('Donors/food/index', {foods : foods});
@@ -202,14 +240,98 @@ app.post('/Donors/food/reserve', function(req, res, next){
 		var invalidFood = "<script>alert('Must Select a Food Type')</script>";
 		var query = 'SELECT food.*, business.name FROM food JOIN business on food.bid = business.id;';
 		mysql.pool.query(query, function(err, rows, fields){
-			res.render('Donors/food/index', {foods : rows, alert : invalidFood});
-		});
+                if(err){
+                        next(err);
+                        return;
+                }
+
+                	//function takes a 4 character string representing military and returns std time representation
+                	var getFormattedTime = function(fourDigitTime){
+                	        var hours24 = parseInt(fourDigitTime.substring(0, 2), 10);
+                	        var hours = ((hours24 + 11) % 12) + 1;
+                	        var amPm = hours24 > 11 ? ' pm' : ' am';
+                	        var minutes = fourDigitTime.substring(2);
+	
+       		                return hours + ':' + minutes + amPm;
+                	};
+
+                	//create double digit number if the number is single digit; the first digit being a '0'
+                	//function takes an int and returns a string such that if the in is a single digit the string will be 2 chars:
+                	//one being the input int and the other being a '0' char
+                	var minsCon = function(t){
+                	        var n;
+                	        if(t < 10){
+                	                n = '0' + t.toString();
+                	        }else{
+                	                n = t.toString();
+                	        }
+	
+       	         	        return n;
+       		         }
+
+                	//get military time representation from query (from each tuple i.e., length of rows)
+                	//pass to the format functions for conversion to standard time representation
+                	for(var i = 0; i < rows.length; i++){
+                	        if(typeof rows[i]["availability_start"] === 'object'){
+                	                var datetime = rows[i]["availability_start"];
+                	                var datetime2 = rows[i]["availability_end"];
+                	                var newDateTime = (datetime.getMonth() + 1) + '/' + datetime.getUTCDate() + '/' + datetime.getUTCFullYear() + ' ' + getFormattedTime(datetime.getHours().toString() + minsCon(datetime.getMinutes()));
+                	                rows[i]["availability_start"] = newDateTime;
+                	                newDateTime = (datetime2.getMonth() + 1) + '/' + datetime2.getUTCDate() + '/' + datetime2.getUTCFullYear() + ' ' + getFormattedTime(datetime2.getHours().toString() + minsCon(datetime2.getMinutes()));
+                	                rows[i]["availability_end"] = newDateTime;
+                	        }
+                	}
+	
+				res.render('Donors/food/index', {foods : rows, alert : invalidFood});
+			});
 	}else if(req.body.quantity == ""){
 		var invalidQuantity = "<script>alert('Must Select a Quantity')</script>";
 		var query = 'SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id;';
 		mysql.pool.query(query, function(err, rows, fields){
-			res.render('Donors/food/index', {foods : rows, alert : invalidQuantity});
-		});
+                if(err){
+                        next(err);
+                        return;
+                }
+
+        	        //function takes a 4 character string representing military and returns std time representation
+        	        var getFormattedTime = function(fourDigitTime){
+        	                var hours24 = parseInt(fourDigitTime.substring(0, 2), 10);
+        	                var hours = ((hours24 + 11) % 12) + 1;
+        	                var amPm = hours24 > 11 ? ' pm' : ' am';
+        	                var minutes = fourDigitTime.substring(2);
+	
+	                        return hours + ':' + minutes + amPm;
+	                };
+	
+       	        	 //create double digit number if the number is single digit; the first digit being a '0'
+       		         //function takes an int and returns a string such that if the in is a single digit the string will be 2 chars:
+                	//one being the input int and the other being a '0' char
+                	var minsCon = function(t){
+                	        var n;
+                	        if(t < 10){
+                	                n = '0' + t.toString();
+                	        }else{
+                	                n = t.toString();
+                	        }
+	
+        	                return n;
+        	        }
+
+        	        //get military time representation from query (from each tuple i.e., length of rows)
+        	        //pass to the format functions for conversion to standard time representation
+        	        for(var i = 0; i < rows.length; i++){
+        	                if(typeof rows[i]["availability_start"] === 'object'){
+                	                var datetime = rows[i]["availability_start"];
+                       		        var datetime2 = rows[i]["availability_end"];
+                                	var newDateTime = (datetime.getMonth() + 1) + '/' + datetime.getUTCDate() + '/' + datetime.getUTCFullYear() + ' ' + getFormattedTime(datetime.getHours().toString() + minsCon(datetime.getMinutes()));
+                                	rows[i]["availability_start"] = newDateTime;
+                                	newDateTime = (datetime2.getMonth() + 1) + '/' + datetime2.getUTCDate() + '/' + datetime2.getUTCFullYear() + ' ' + getFormattedTime(datetime2.getHours().toString() + minsCon(datetime2.getMinutes()));
+                                	rows[i]["availability_end"] = newDateTime;
+                        	}
+                	}
+
+				res.render('Donors/food/index', {foods : rows, alert : invalidQuantity});
+			});
 	}else{
 		var query = 'SELECT * FROM food WHERE id= ';
 		query += req.body.food_id;
@@ -226,6 +348,48 @@ app.post('/Donors/food/reserve', function(req, res, next){
 				var invalidQuantity = "<script>alert('Invalid Quantity')</script>";
 				query = 'SELECT food.*, business.name FROM food JOIN business on food.bid = business.id;';
 				mysql.pool.query(query, function(err, rows, fields){
+                		if(err){
+                        		next(err);
+                        		return;
+                		}
+
+        	        //function takes a 4 character string representing military and returns std time representation
+        	        var getFormattedTime = function(fourDigitTime){
+        	                var hours24 = parseInt(fourDigitTime.substring(0, 2), 10);
+        	                var hours = ((hours24 + 11) % 12) + 1;
+        	                var amPm = hours24 > 11 ? ' pm' : ' am';
+        	                var minutes = fourDigitTime.substring(2);
+
+        	                return hours + ':' + minutes + amPm;
+        	        };
+
+                	//create double digit number if the number is single digit; the first digit being a '0'
+                	//function takes an int and returns a string such that if the in is a single digit the string will be 2 chars:
+                	//one being the input int and the other being a '0' char
+                	var minsCon = function(t){
+                	        var n;
+                	        if(t < 10){
+                	                n = '0' + t.toString();
+                	        }else{
+                        	        n = t.toString();
+                        	}
+	
+	                        return n;
+                	}
+
+                	//get military time representation from query (from each tuple i.e., length of rows)
+                	//pass to the format functions for conversion to standard time representation
+                	for(var i = 0; i < rows.length; i++){
+                	        if(typeof rows[i]["availability_start"] === 'object'){
+                	                var datetime = rows[i]["availability_start"];
+                	                var datetime2 = rows[i]["availability_end"];
+                	                var newDateTime = (datetime.getMonth() + 1) + '/' + datetime.getUTCDate() + '/' + datetime.getUTCFullYear() + ' ' + getFormattedTime(datetime.getHours().toString() + minsCon(datetime.getMinutes()));
+                	                rows[i]["availability_start"] = newDateTime;
+                	                newDateTime = (datetime2.getMonth() + 1) + '/' + datetime2.getUTCDate() + '/' + datetime2.getUTCFullYear() + ' ' + getFormattedTime(datetime2.getHours().toString() + minsCon(datetime2.getMinutes()));
+                	                rows[i]["availability_end"] = newDateTime;
+                	        }
+                	}
+	
 					res.render('Donors/food/index', {foods : rows, alert : invalidQuantity});
 				});
 			}else if(newQuantity == 0){
