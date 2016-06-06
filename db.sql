@@ -1,3 +1,5 @@
+CREATE DATABASE cs361;
+USE DATABASE cs361;
 set FOREIGN_KEY_CHECKS = 0;
 drop table if exists `food`;
 drop table if exists `business`;
@@ -13,7 +15,6 @@ CREATE TABLE `food` (
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
 
-//need unique key
 CREATE TABLE `business` (
 	`id` INT PRIMARY KEY AUTO_INCREMENT,
 	`name` VARCHAR(255) NOT NULL,
@@ -25,11 +26,6 @@ CREATE TABLE `business` (
 	UNIQUE KEY (street_address)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
-
-//Query that displays food entity and businesss name associated with that food entity
-'SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id;'
-
-//sample insertion queries
 insert into business (`name`, `street_address`, `city`, `state`, `zip`, `specific_location`) values
 ("Joe Blow`s Dough", "2341 Who Cares", "Springville", "Illinois", 98765, "Around the back");
 
@@ -38,5 +34,5 @@ insert into food (`type`, `bid`, `quantity`, `availability_start`, `availability
 
 select * from food;
 select * from business;
+SELECT food.*, business.name FROM food JOIN business ON food.bid = business.id;
 
-select name from business b inner join food_business on b.id = fb.fk_business_id where (select availability_start from food f inner join food_business fb on food.id = fk_food_id where availability_start < "2016-06-1 07:00:00");

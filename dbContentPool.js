@@ -2,7 +2,7 @@
  var pool = mysql.createPool({
    host  : 'localhost',
    user  : 'root',
-   password: 'default',
+   //password: 'default',
    database: 'cs361'
  });
 
